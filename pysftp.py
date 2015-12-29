@@ -251,12 +251,8 @@ class Connection(object):
         # Toggle compression
         self._transport.use_compression(self._cnopts.compression)
 
-        # Authenticate the transport. prefer password if given
-        if password is not None:
-            # Using Password.
-            self._transport.connect(username=username, password=password)
-        else:
-            # Use Private Key.
+        prv_key = None
+        if private_key is not None:
             if not private_key:
                 # Try to use default key.
                 if os.path.exists(os.path.expanduser('~/.ssh/id_rsa')):
@@ -283,7 +279,8 @@ class Connection(object):
             else:
                 # use the paramiko agent or rsa key
                 prv_key = private_key
-            self._transport.connect(username=username, pkey=prv_key)
+
+        self._transport.connect(username=username, password=password, pkey=prv_key)
 
     def _sftp_connect(self):
         """Establish the SFTP connection."""
